@@ -1,0 +1,42 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Deye SUN Inverter",
+        "description": "Configure the connection to your Deye inverter (SUN600, SUN800, SUN1000, etc.).",
+        "data": {
+          "host": "IP Address",
+          "username": "Username",
+          "password": "Password",
+          "scan_interval": "Scan Interval (seconds)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to inverter",
+      "invalid_auth": "Invalid authentication",
+      "unknown": "Unknown error"
+    },
+    "abort": {
+      "already_configured": "This inverter is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Deye Inverter Settings",
+        "description": "Change the connection settings for your Deye inverter.",
+        "data": {
+          "username": "Username",
+          "password": "Password",
+          "scan_interval": "Scan Interval (seconds)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to inverter",
+      "invalid_auth": "Invalid authentication",
+      "unknown": "Unknown error"
+    }
+  }
+}

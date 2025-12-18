@@ -1,0 +1,42 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Deye SUN Wechselrichter",
+        "description": "Konfiguriere die Verbindung zu deinem Deye Wechselrichter (SUN600, SUN800, SUN1000, etc.).",
+        "data": {
+          "host": "IP-Adresse",
+          "username": "Benutzername",
+          "password": "Passwort",
+          "scan_interval": "Abfrageintervall (Sekunden)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zum Wechselrichter fehlgeschlagen",
+      "invalid_auth": "Ungültige Anmeldedaten",
+      "unknown": "Unbekannter Fehler"
+    },
+    "abort": {
+      "already_configured": "Dieser Wechselrichter ist bereits konfiguriert"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Deye Wechselrichter Einstellungen",
+        "description": "Ändere die Verbindungseinstellungen für deinen Deye Wechselrichter.",
+        "data": {
+          "username": "Benutzername",
+          "password": "Passwort",
+          "scan_interval": "Abfrageintervall (Sekunden)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zum Wechselrichter fehlgeschlagen",
+      "invalid_auth": "Ungültige Anmeldedaten",
+      "unknown": "Unbekannter Fehler"
+    }
+  }
+}

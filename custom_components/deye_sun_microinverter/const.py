@@ -1,6 +1,6 @@
-"""Constants for the Deye SUN Inverter integration."""
+"""Constants for the Deye Sun Microinverter integration."""
 
-DOMAIN = "deye_sun"
+DOMAIN = "deye_sun_microinverter"
 
 # Configuration
 CONF_HOST = "host"

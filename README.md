@@ -346,20 +346,6 @@ device_info_interval = 86400 seconds # 24 Hours
 
 ---
 
-## 📝 Changelog
-
-### Version 1.0.0
-- ✅ Initial release
-- ✅ Support for Deye SUN 600/800/1000 Micro-Inverters
-- ✅ 8 Sensors: Current Power, Energy Today, Total Energy, WiFi, Device Info, Status
-- ✅ HTTP Basic Auth Support
-- ✅ Configurable Update Intervals
-- ✅ German & English UI
-- ✅ Energy Dashboard Integration
-- ✅ Test Script for Connection Testing
-
----
-
 ### Frequently Asked Questions (FAQ)
 
 **Q: Which inverters are supported?**

@@ -9,7 +9,7 @@ import sys
 import json
 from pathlib import Path
 
-INTEGRATION_PATH = Path("custom_components/deye_sun")
+INTEGRATION_PATH = Path("custom_components/deye_sun_microinverter")
 
 def check_python_syntax(file_path: Path) -> tuple[bool, str]:
     """Check Python file for syntax errors."""

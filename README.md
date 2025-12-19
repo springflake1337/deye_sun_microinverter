@@ -260,7 +260,7 @@ This creates a file like `deye_response_192_168_2_50.html` with the complete HTT
 
 ---
 
-## 🌙 Night Mode / Offline Behavior
+## Night Mode / Offline Behavior
 
 The Deye SUN inverter **automatically shuts down** when no solar energy is available (night, cloudy, shaded). This is **normal and intended** - the inverter saves energy this way.
 
@@ -305,7 +305,7 @@ device_info_interval = 86400 seconds # 24 Hours
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Problem: "Connection Failed"
 
@@ -360,8 +360,6 @@ device_info_interval = 86400 seconds # 24 Hours
 
 ---
 
-## Support
-
 ### Frequently Asked Questions (FAQ)
 
 **Q: Which inverters are supported?**
@@ -394,41 +392,6 @@ A: No, this integration is read-only (data retrieval only).
 
 ---
 
-## File Structure
-
-```
-deye_sun_microinverter/
-├── README.md                           # This document
-├── requirements.txt                    # Python Dependencies
-├── test_connection.py                  # Test Script
-└── custom_components/
-    └── deye_sun/
-        ├── __init__.py                 # Main Integration & Data Coordinator
-        ├── config_flow.py              # Configuration UI
-        ├── sensor.py                   # Sensor Entities
-        ├── const.py                    # Constants
-        ├── manifest.json               # Integration Metadata
-        ├── strings.json                # UI Strings (English)
-        └── translations/
-            ├── en.json                 # English Translation
-            └── de.json                 # German Translation
-```
-
----
-
-## License
-
-MIT License - See LICENSE file for details
-
----
-
-## 🙏 Credits
-
-- Developed for Home Assistant Community by springflake
-- Tested with Deye SUN800 MW3_16U_5406_1.62
-
----
-
 ## Security
 
 ⚠️ **Important:**
@@ -436,8 +399,3 @@ MIT License - See LICENSE file for details
 - Ensure your Home Assistant is properly protected
 - Use strong passwords on your inverter
 - Communication is unencrypted (HTTP Basic Auth)
-
----
-
-**Last Updated:** December 2025
-**Compatibility:** Home Assistant 2023.6+

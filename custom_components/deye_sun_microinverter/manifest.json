@@ -1,0 +1,17 @@
+{
+  "domain": "deye_sun_microinverter",
+  "name": "Deye SUN Microinverter",
+  "codeowners": ["@springflake"],
+  "config_flow": true,
+  "documentation": "https://github.com/springflake/deye_sun_microinverter",
+  "requirements": [
+    "aiohttp>=3.8.0"
+  ],
+  "version": "1.0.0",
+  "minimum_home_assistant_version": "2023.6",
+  "homeassistant": {
+    "platforms": {
+      "sensor": "custom_components.deye_sun_microinverter"
+    }
+  }
+}

@@ -18,6 +18,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.helpers.restore_state import RestoreEntity
 
 from . import DeyeDataUpdateCoordinator
 from .const import DOMAIN, CONF_HOST
@@ -148,7 +149,7 @@ class DeyeCurrentPowerSensor(DeyeBaseSensor):
         return float(value)
 
 
-class DeyeTodayEnergySensor(DeyeBaseSensor):
+class DeyeTodayEnergySensor(DeyeBaseSensor, RestoreEntity):
     """Sensor for today's energy generation."""
 
     def __init__(self, coordinator: DeyeDataUpdateCoordinator, host: str) -> None:
@@ -163,19 +164,37 @@ class DeyeTodayEnergySensor(DeyeBaseSensor):
             state_class=SensorStateClass.TOTAL_INCREASING,
             unit=UnitOfEnergy.KILO_WATT_HOUR,
         )
+        self._last_known_value = None
+
+    async def async_added_to_hass(self) -> None:
+        """Handle entity which will be added."""
+        await super().async_added_to_hass()
+        if (last_state := await self.async_get_last_state()) is not None:
+            try:
+                self._last_known_value = float(last_state.state)
+            except ValueError:
+                pass
 
     @property
     def native_value(self) -> float:
         """Return cached value when offline to preserve dashboard calculations."""
-        if self.coordinator.data is None:
-            return 0.0
-        value = self.coordinator.data.get(self._key)
-        if value is None:
-            return 0.0
-        return float(value)
+        val = 0.0
+        if self.coordinator.data is not None:
+            val = self.coordinator.data.get(self._key, 0.0)
+        
+        # If we have a valid value from coordinator, use it and update last known
+        if val > 0:
+            self._last_known_value = val
+            return val
+        
+        # If coordinator has 0 (offline/restart), return last known value
+        if self._last_known_value is not None:
+            return self._last_known_value
+            
+        return 0.0
 
 
-class DeyeTotalEnergySensor(DeyeBaseSensor):
+class DeyeTotalEnergySensor(DeyeBaseSensor, RestoreEntity):
     """Sensor for total energy generation."""
 
     def __init__(self, coordinator: DeyeDataUpdateCoordinator, host: str) -> None:
@@ -190,16 +209,34 @@ class DeyeTotalEnergySensor(DeyeBaseSensor):
             state_class=SensorStateClass.TOTAL_INCREASING,
             unit=UnitOfEnergy.KILO_WATT_HOUR,
         )
+        self._last_known_value = None
+
+    async def async_added_to_hass(self) -> None:
+        """Handle entity which will be added."""
+        await super().async_added_to_hass()
+        if (last_state := await self.async_get_last_state()) is not None:
+            try:
+                self._last_known_value = float(last_state.state)
+            except ValueError:
+                pass
 
     @property
     def native_value(self) -> float:
         """Return cached value when offline to preserve dashboard calculations."""
-        if self.coordinator.data is None:
-            return 0.0
-        value = self.coordinator.data.get(self._key)
-        if value is None:
-            return 0.0
-        return float(value)
+        val = 0.0
+        if self.coordinator.data is not None:
+            val = self.coordinator.data.get(self._key, 0.0)
+        
+        # If we have a valid value from coordinator, use it and update last known
+        if val > 0:
+            self._last_known_value = val
+            return val
+        
+        # If coordinator has 0 (offline/restart), return last known value
+        if self._last_known_value is not None:
+            return self._last_known_value
+            
+        return 0.0
 
 
 class DeyeWifiSsidSensor(DeyeBaseSensor):

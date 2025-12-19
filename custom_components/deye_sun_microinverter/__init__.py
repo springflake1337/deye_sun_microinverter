@@ -122,6 +122,7 @@ class DeyeDataUpdateCoordinator(DataUpdateCoordinator):
         self._energy_cache: dict[str, Any] = {
             "today_energy": 0.0,
             "total_energy": 0.0,
+            "current_power": 0.0,
         }
         
         # Track connection state
@@ -153,7 +154,10 @@ class DeyeDataUpdateCoordinator(DataUpdateCoordinator):
         
         try:
             auth = aiohttp.BasicAuth(self.username, self.password)
-            timeout = aiohttp.ClientTimeout(total=30, connect=10)
+            # Reduce timeout to prevent overlapping with scan interval
+            # Deye inverters are slow single-threaded devices. 
+            # If it takes >10s, it's likely stuck or busy.
+            timeout = aiohttp.ClientTimeout(total=10, connect=5)
             
             async with self._session.get(url, auth=auth, timeout=timeout) as response:
                 if response.status == 401:
@@ -204,6 +208,8 @@ class DeyeDataUpdateCoordinator(DataUpdateCoordinator):
                 self._consecutive_failures,
                 reason
             )
+            # When truly unavailable (night mode), power is 0
+            return self._get_empty_data()
         else:
             _LOGGER.debug(
                 "Connection failed (%d/%d): %s",
@@ -211,9 +217,18 @@ class DeyeDataUpdateCoordinator(DataUpdateCoordinator):
                 self._max_failures_before_unavailable,
                 reason
             )
-        
-        # Return cached data with availability flag
-        return self._get_empty_data()
+            # For short glitches, return last known good values including power
+            # This prevents power drops to 0 during short network issues
+            return {
+                "current_power": self._energy_cache.get("current_power", 0.0),
+                "today_energy": self._energy_cache.get("today_energy", 0.0),
+                "total_energy": self._energy_cache.get("total_energy", 0.0),
+                "serial_number": self._device_info_cache.get("serial_number"),
+                "firmware_version": self._device_info_cache.get("firmware_version"),
+                "wifi_ssid": self._wifi_info_cache.get("wifi_ssid"),
+                "wifi_signal": self._wifi_info_cache.get("wifi_signal"),
+                "available": True, # Pretend to be available during glitches
+            }
 
     def _should_update_wifi(self) -> bool:
         """Check if WiFi info should be updated (every 15 minutes)."""
@@ -240,29 +255,47 @@ class DeyeDataUpdateCoordinator(DataUpdateCoordinator):
         if match:
             data["current_power"] = self._parse_numeric_value(match.group(1))
         else:
-            data["current_power"] = 0.0
-            _LOGGER.debug("webdata_now_p not found, setting to 0")
+            # If parsing fails, use last known value instead of 0 to avoid drops
+            data["current_power"] = self._energy_cache.get("current_power", 0.0)
+            _LOGGER.debug("webdata_now_p not found, using cached value")
         
         # Today's energy (kWh)
         match = re.search(r'var\s+webdata_today_e\s*=\s*"([^"]*)";', html)
         if match:
-            data["today_energy"] = self._parse_numeric_value(match.group(1))
+            new_today = self._parse_numeric_value(match.group(1))
+            if new_today > 0:
+                data["today_energy"] = new_today
+            else:
+                # If parsing returned 0 (error/glitch), keep cached value
+                data["today_energy"] = self._energy_cache.get("today_energy", 0.0)
         else:
-            data["today_energy"] = 0.0
-            _LOGGER.debug("webdata_today_e not found, setting to 0")
+            data["today_energy"] = self._energy_cache.get("today_energy", 0.0)
+            _LOGGER.debug("webdata_today_e not found, using cached value")
         
         # Total energy (kWh)
         match = re.search(r'var\s+webdata_total_e\s*=\s*"([^"]*)";', html)
         if match:
-            data["total_energy"] = self._parse_numeric_value(match.group(1))
+            new_total = self._parse_numeric_value(match.group(1))
+            if new_total > 0:
+                data["total_energy"] = new_total
+            else:
+                # If parsing returned 0 (error/glitch), keep cached value
+                data["total_energy"] = self._energy_cache.get("total_energy", 0.0)
         else:
             # Keep last known value for total energy
             data["total_energy"] = self._energy_cache.get("total_energy", 0.0)
             _LOGGER.debug("webdata_total_e not found, using cached value")
         
         # Update energy cache with new values (for use when offline)
-        self._energy_cache["today_energy"] = data.get("today_energy", 0.0)
-        self._energy_cache["total_energy"] = data.get("total_energy", 0.0)
+        self._energy_cache["current_power"] = data.get("current_power", 0.0)
+        
+        # Only update energy caches if we have valid values
+        if data.get("today_energy", 0.0) > 0:
+            self._energy_cache["today_energy"] = data.get("today_energy", 0.0)
+        
+        # Only update total energy cache if we have a valid value
+        if data.get("total_energy", 0.0) > 0:
+            self._energy_cache["total_energy"] = data.get("total_energy", 0.0)
         
         # === WIFI DATA (updated every 15 minutes) ===
         

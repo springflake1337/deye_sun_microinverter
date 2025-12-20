@@ -164,6 +164,7 @@ class DeyeTodayEnergySensor(DeyeBaseSensor, RestoreEntity):
             state_class=SensorStateClass.TOTAL_INCREASING,
             unit=UnitOfEnergy.KILO_WATT_HOUR,
         )
+        self._attr_suggested_display_precision = 1
         self._last_known_value = None
 
     async def async_added_to_hass(self) -> None:
@@ -209,6 +210,7 @@ class DeyeTotalEnergySensor(DeyeBaseSensor, RestoreEntity):
             state_class=SensorStateClass.TOTAL_INCREASING,
             unit=UnitOfEnergy.KILO_WATT_HOUR,
         )
+        self._attr_suggested_display_precision = 1
         self._last_known_value = None
 
     async def async_added_to_hass(self) -> None:

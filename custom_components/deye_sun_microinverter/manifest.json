@@ -4,8 +4,8 @@
   "codeowners": ["@springflake1337"],
   "config_flow": true,
   "documentation": "https://github.com/springflake1337/deye_sun_microinverter",
-  "issue_tracker": "https://github.com/springflake1337/deye_sun_microinverter/issues",
   "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/springflake1337/deye_sun_microinverter/issues",
   "requirements": [
     "aiohttp>=3.8.0"
   ],

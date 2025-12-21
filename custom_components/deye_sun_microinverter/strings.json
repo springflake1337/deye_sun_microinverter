@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Deye SUN Inverter",
+        "title": "Deye SUN Micro Inverter",
         "description": "Configure the connection to your Deye inverter (SUN600, SUN800, SUN1000, etc.).",
         "data": {
           "host": "IP Address",

@@ -1,13 +1,15 @@
 {
   "domain": "deye_sun_microinverter",
   "name": "Deye SUN Microinverter",
-  "codeowners": ["@springflake"],
+  "codeowners": ["@springflake1337"],
   "config_flow": true,
-  "documentation": "https://github.com/springflake/deye_sun_microinverter",
+  "documentation": "https://github.com/springflake1337/deye_sun_microinverter",
+  "issue_tracker": "https://github.com/springflake1337/deye_sun_microinverter/issues",
+  "iot_class": "local_polling",
   "requirements": [
     "aiohttp>=3.8.0"
   ],
-  "version": "1.0.0",
+  "version": "1.0.1",
   "minimum_home_assistant_version": "2023.6",
   "homeassistant": {
     "platforms": {

@@ -19,6 +19,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.restore_state import RestoreEntity
+from homeassistant.util import dt as dt_util
 
 from . import DeyeDataUpdateCoordinator
 from .const import DOMAIN, CONF_HOST
@@ -166,6 +167,7 @@ class DeyeTodayEnergySensor(DeyeBaseSensor, RestoreEntity):
         )
         self._attr_suggested_display_precision = 1
         self._last_known_value = None
+        self._last_reset_date = dt_util.now().date()
 
     async def async_added_to_hass(self) -> None:
         """Handle entity which will be added."""
@@ -179,6 +181,12 @@ class DeyeTodayEnergySensor(DeyeBaseSensor, RestoreEntity):
     @property
     def native_value(self) -> float:
         """Return cached value when offline to preserve dashboard calculations."""
+        # Check for midnight reset
+        now = dt_util.now()
+        if self._last_reset_date != now.date():
+            self._last_known_value = None
+            self._last_reset_date = now.date()
+
         val = 0.0
         if self.coordinator.data is not None:
             val = self.coordinator.data.get(self._key, 0.0)

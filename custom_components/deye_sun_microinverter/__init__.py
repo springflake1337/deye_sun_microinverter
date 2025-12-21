@@ -14,6 +14,7 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 
 from .const import (
     DOMAIN,
@@ -129,6 +130,9 @@ class DeyeDataUpdateCoordinator(DataUpdateCoordinator):
         self._is_available = False
         self._consecutive_failures = 0
         self._max_failures_before_unavailable = 3
+        
+        # Track last reset date for energy
+        self._last_reset_date = dt_util.now().date()
 
     def _get_empty_data(self) -> dict:
         """Return data structure when inverter is unavailable (night mode)."""
@@ -148,8 +152,17 @@ class DeyeDataUpdateCoordinator(DataUpdateCoordinator):
             "available": False,
         }
 
+    def _check_midnight_reset(self) -> None:
+        """Reset daily energy cache at midnight."""
+        now = dt_util.now()
+        if self._last_reset_date != now.date():
+            _LOGGER.debug("Midnight reset: Resetting daily energy cache")
+            self._energy_cache["today_energy"] = 0.0
+            self._last_reset_date = now.date()
+
     async def _async_update_data(self) -> dict:
         """Fetch data from the Deye inverter web interface."""
+        self._check_midnight_reset()
         url = f"http://{self.host}/status.html"
         
         try:

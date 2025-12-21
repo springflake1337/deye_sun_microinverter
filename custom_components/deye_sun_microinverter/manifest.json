@@ -10,10 +10,5 @@
     "aiohttp>=3.8.0"
   ],
   "version": "1.0.1",
-  "minimum_home_assistant_version": "2023.6",
-  "homeassistant": {
-    "platforms": {
-      "sensor": "custom_components.deye_sun_microinverter"
-    }
-  }
+  "minimum_home_assistant_version": "2023.6"
 }
